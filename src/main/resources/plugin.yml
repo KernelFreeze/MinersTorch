@@ -1,8 +1,9 @@
-name: Minerstorch
+name: MinersTorch
 description: You can place torches with your pickage
 main: me.kernelfreeze.minerstorch.MinersTorch
-version: 1.0
-api-version: 1.13
+version: "1.1"
+api-version: "1.16"
+
 permissions:
     minerstorch.*:
         description: Gives access to all Miners torch features
