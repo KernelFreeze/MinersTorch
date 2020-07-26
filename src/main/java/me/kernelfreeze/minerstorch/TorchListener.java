@@ -1,7 +1,5 @@
 package me.kernelfreeze.minerstorch;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,19 +12,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.EnumSet;
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TorchListener implements Listener {
 
-    private static final Set<Material> PICKAXES = EnumSet.of(Material.WOODEN_PICKAXE,
-            Material.STONE_PICKAXE,
-            Material.GOLDEN_PICKAXE,
-            Material.IRON_PICKAXE,
-            Material.DIAMOND_PICKAXE,
-            Material.NETHERITE_PICKAXE);
     private static final ItemStack TORCH = new ItemStack(Material.TORCH, 1); // Amount of 1 - for implementation
+
+    private static boolean isUsingPickaxe(Material material) {
+        return material.name().endsWith("PICKAXE");
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -37,7 +32,7 @@ public class TorchListener implements Listener {
         if (item == null || block == null || face == BlockFace.DOWN) {
             return;
         }
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !PICKAXES.contains(item.getType())) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !isUsingPickaxe(item.getType())) {
             return;
         }
 
