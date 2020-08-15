@@ -53,8 +53,10 @@ public class TorchListener implements Listener {
             return;
         }
 
+        ItemStack torchItem = new ItemStack(Material.TORCH);
+
         // Fire block place event
-        BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(placedBlock, placedBlock.getState(), clickedBlock, item, player, true, EquipmentSlot.HAND);
+        BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(placedBlock, placedBlock.getState(), clickedBlock, torchItem, player, true, EquipmentSlot.HAND);
         Bukkit.getPluginManager().callEvent(blockPlaceEvent);
 
         // Should we cancel?
