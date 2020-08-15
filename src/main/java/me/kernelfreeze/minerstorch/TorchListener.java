@@ -10,7 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,18 +28,18 @@ public class TorchListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         @Nullable ItemStack item = event.getItem();
-        @Nullable Block block = event.getClickedBlock();
+        @Nullable Block clickedBlock = event.getClickedBlock();
         @NotNull BlockFace face = event.getBlockFace();
 
-        if (item == null || block == null || face == BlockFace.DOWN) {
+        if (item == null || clickedBlock == null || face == BlockFace.DOWN) {
             return;
         }
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !isUsingPickaxe(item.getType())) {
             return;
         }
 
-        block = block.getRelative(face);
-        if (block.getType() != Material.AIR) {
+        Block placedBlock = clickedBlock.getRelative(face);
+        if (placedBlock.getType() != Material.AIR) {
             return;
         }
 
@@ -51,13 +53,21 @@ public class TorchListener implements Listener {
             return;
         }
 
-        if (face == BlockFace.UP) {
-            block.setType(Material.TORCH);
-        } else {
-            block.setBlockData(Bukkit.createBlockData(Material.WALL_TORCH, blockData -> ((Directional) blockData).setFacing(face)));
+        // Fire block place event
+        BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(placedBlock, placedBlock.getState(), clickedBlock, item, player, true, EquipmentSlot.HAND);
+        Bukkit.getPluginManager().callEvent(blockPlaceEvent);
+
+        // Should we cancel?
+        if (blockPlaceEvent.isCancelled() || !blockPlaceEvent.canBuild()) {
+            return;
         }
 
-        player.playSound(block.getLocation(), Sound.BLOCK_WOOD_PLACE, 1.0F, 1.0F);
-    }
+        if (face == BlockFace.UP) {
+            placedBlock.setType(Material.TORCH);
+        } else {
+            placedBlock.setBlockData(Bukkit.createBlockData(Material.WALL_TORCH, blockData -> ((Directional) blockData).setFacing(face)));
+        }
 
+        player.playSound(placedBlock.getLocation(), Sound.BLOCK_WOOD_PLACE, 1.0F, 1.0F);
+    }
 }
